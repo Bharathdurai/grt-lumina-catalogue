@@ -2,24 +2,33 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Phone, Mail, MapPin, Send } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const Contact = () => {
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
       toast.error("Please fill in all required fields");
       return;
     }
     setLoading(true);
-    // Simulate submission (will be replaced with Supabase later)
-    setTimeout(() => {
+    const { error } = await supabase.from("contact_submissions").insert({
+      name: form.name.trim(),
+      email: form.email.trim(),
+      phone: form.phone.trim() || null,
+      message: form.message.trim(),
+    });
+    if (error) {
+      toast.error("Failed to send message. Please try again.");
+      console.error("Contact submission error:", error);
+    } else {
       toast.success("Message sent! We'll get back to you soon.");
       setForm({ name: "", email: "", phone: "", message: "" });
-      setLoading(false);
-    }, 800);
+    }
+    setLoading(false);
   };
 
   return (
