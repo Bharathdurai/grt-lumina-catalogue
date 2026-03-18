@@ -1,92 +1,179 @@
 import { useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { products, categories, Category, Metal } from "@/data/products";
-import ProductCard from "@/components/ProductCard";
+import { useCatalogueProducts, useCategories } from "@/hooks/useCatalogueProducts";
+import CatalogueProductCard from "@/components/CatalogueProductCard";
+import ShopFilterSidebar, { FilterState } from "@/components/ShopFilterSidebar";
+import PincodeModal from "@/components/PincodeModal";
 import { motion } from "framer-motion";
+import { Search, SlidersHorizontal, X } from "lucide-react";
+
+const defaultFilters: FilterState = {
+  categoryIds: [],
+  metalTypes: [],
+  minPrice: 0,
+  maxPrice: 500000,
+  minWeight: 0,
+  maxWeight: 500,
+  includeOutOfStock: false,
+};
+
+const SORT_OPTIONS = [
+  { value: "popular", label: "Popular" },
+  { value: "newest", label: "Newest" },
+  { value: "price_low", label: "Price: Low to High" },
+  { value: "price_high", label: "Price: High to Low" },
+  { value: "weight", label: "Weight: Light to Heavy" },
+];
 
 const Shop = () => {
   const [searchParams] = useSearchParams();
-  const initialCat = searchParams.get("category") as Category | null;
-  const initialMetal = searchParams.get("metal") as Metal | null;
+  const [filters, setFilters] = useState<FilterState>(defaultFilters);
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("popular");
+  const [pincode, setPincode] = useState("");
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  const [selectedCategory, setSelectedCategory] = useState<Category | "All">(initialCat || "All");
-  const [selectedMetal, setSelectedMetal] = useState<Metal | "All">(initialMetal || "All");
+  const { data: categories = [] } = useCategories();
+  const { data: products = [], isLoading } = useCatalogueProducts({
+    categoryIds: filters.categoryIds.length ? filters.categoryIds : undefined,
+    metalTypes: filters.metalTypes.length ? filters.metalTypes : undefined,
+    minPrice: filters.minPrice > 0 ? filters.minPrice : undefined,
+    maxPrice: filters.maxPrice < 500000 ? filters.maxPrice : undefined,
+    minWeight: filters.minWeight > 0 ? filters.minWeight : undefined,
+    maxWeight: filters.maxWeight < 500 ? filters.maxWeight : undefined,
+    search: search || undefined,
+    includeOutOfStock: filters.includeOutOfStock,
+    pincode: pincode || undefined,
+    sortBy,
+  });
 
-  const filtered = useMemo(() => {
-    return products.filter((p) => {
-      if (selectedCategory !== "All" && p.category !== selectedCategory) return false;
-      if (selectedMetal !== "All" && p.metal !== selectedMetal) return false;
-      return true;
-    });
-  }, [selectedCategory, selectedMetal]);
+  const clearAll = () => {
+    setFilters(defaultFilters);
+    setSearch("");
+    setPincode("");
+  };
 
   return (
-    <div className="container mx-auto px-4 py-10 md:py-16">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
-        <p className="text-primary font-body text-sm uppercase tracking-[0.2em] mb-2">Catalogue</p>
-        <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground">Our Jewellery</h1>
-      </motion.div>
+    <div className="min-h-screen bg-background">
+      {/* Top bar */}
+      <div className="border-b border-border bg-card">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="font-display text-2xl md:text-3xl font-bold text-primary">JEWELLERY</h1>
+              <p className="text-sm text-muted-foreground font-body">{products.length} Designs</p>
+            </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-3 mb-8">
-        <FilterGroup
-          label="Category"
-          options={["All", ...categories.map((c) => c.name)]}
-          value={selectedCategory}
-          onChange={(v) => setSelectedCategory(v as Category | "All")}
-        />
-        <div className="w-px bg-border mx-2 hidden md:block" />
-        <FilterGroup
-          label="Metal"
-          options={["All", "Gold", "Silver"]}
-          value={selectedMetal}
-          onChange={(v) => setSelectedMetal(v as Metal | "All")}
-        />
+            <div className="flex items-center gap-3 flex-wrap">
+              {/* Search */}
+              <div className="relative flex-1 md:w-72">
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search for Jewellery"
+                  className="w-full pl-9 pr-8 py-2 border border-border rounded-lg font-body text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+                {search && (
+                  <button onClick={() => setSearch("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+
+              <PincodeModal pincode={pincode} onPincodeChange={setPincode} />
+
+              {/* Sort */}
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-3 py-2 border border-border rounded-lg font-body text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                {SORT_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+
+              {/* Mobile filter toggle */}
+              <button
+                onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+                className="md:hidden flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-sm font-body"
+              >
+                <SlidersHorizontal size={14} /> Filters
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Grid */}
-      {filtered.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filtered.map((p, i) => (
-            <ProductCard key={p.id} product={p} index={i} />
-          ))}
+      <div className="container mx-auto px-4 py-6">
+        <div className="flex gap-6">
+          {/* Desktop Sidebar */}
+          <aside className="hidden md:block w-64 flex-shrink-0">
+            <div className="sticky top-20">
+              <ShopFilterSidebar
+                categories={categories}
+                filters={filters}
+                onFiltersChange={setFilters}
+                onClearAll={clearAll}
+                productCount={products.length}
+              />
+            </div>
+          </aside>
+
+          {/* Mobile Sidebar Overlay */}
+          {mobileFiltersOpen && (
+            <div className="fixed inset-0 z-50 md:hidden">
+              <div className="absolute inset-0 bg-foreground/50" onClick={() => setMobileFiltersOpen(false)} />
+              <motion.div
+                initial={{ x: -300 }}
+                animate={{ x: 0 }}
+                className="absolute left-0 top-0 bottom-0 w-80 bg-background p-6 overflow-y-auto"
+              >
+                <div className="flex justify-between items-center mb-4">
+                  <span className="font-display text-lg font-bold">Filters</span>
+                  <button onClick={() => setMobileFiltersOpen(false)}><X size={20} /></button>
+                </div>
+                <ShopFilterSidebar
+                  categories={categories}
+                  filters={filters}
+                  onFiltersChange={setFilters}
+                  onClearAll={clearAll}
+                  productCount={products.length}
+                />
+              </motion.div>
+            </div>
+          )}
+
+          {/* Product Grid */}
+          <main className="flex-1">
+            {isLoading ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="bg-muted animate-pulse rounded-lg aspect-[3/4]" />
+                ))}
+              </div>
+            ) : products.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+                {products.map((p, i) => (
+                  <CatalogueProductCard key={p.id} product={p} index={i} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-20">
+                <p className="text-muted-foreground font-body text-lg mb-2">No products found</p>
+                <p className="text-muted-foreground font-body text-sm">Try adjusting your filters or search term.</p>
+                <button onClick={clearAll} className="mt-4 text-primary font-body font-semibold hover:underline">
+                  Clear all filters
+                </button>
+              </div>
+            )}
+          </main>
         </div>
-      ) : (
-        <div className="text-center py-20 text-muted-foreground font-body">
-          No products found. Try a different filter.
-        </div>
-      )}
+      </div>
     </div>
   );
 };
-
-const FilterGroup = ({
-  label,
-  options,
-  value,
-  onChange,
-}: {
-  label: string;
-  options: string[];
-  value: string;
-  onChange: (v: string) => void;
-}) => (
-  <div className="flex items-center gap-2 flex-wrap">
-    <span className="text-xs text-muted-foreground font-body uppercase tracking-wider">{label}:</span>
-    {options.map((opt) => (
-      <button
-        key={opt}
-        onClick={() => onChange(opt)}
-        className={`px-3 py-1.5 rounded-full text-xs font-body font-medium transition-all border ${
-          value === opt
-            ? "gradient-gold text-primary-foreground border-transparent"
-            : "bg-card text-muted-foreground border-border hover:border-primary/30"
-        }`}
-      >
-        {opt}
-      </button>
-    ))}
-  </div>
-);
 
 export default Shop;

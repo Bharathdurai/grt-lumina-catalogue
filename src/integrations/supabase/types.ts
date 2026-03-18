@@ -14,6 +14,91 @@ export type Database = {
   }
   public: {
     Tables: {
+      catalogue_products: {
+        Row: {
+          category_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_featured: boolean | null
+          is_new: boolean | null
+          metal_type: string
+          name: string
+          price: number
+          sku_code: string
+          weight_grams: number
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          is_new?: boolean | null
+          metal_type?: string
+          name: string
+          price?: number
+          sku_code: string
+          weight_grams?: number
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          is_new?: boolean | null
+          metal_type?: string
+          name?: string
+          price?: number
+          sku_code?: string
+          weight_grams?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalogue_products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      categories: {
+        Row: {
+          created_at: string
+          display_order: number | null
+          id: string
+          name: string
+          parent_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          name: string
+          parent_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          name?: string
+          parent_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_submissions: {
         Row: {
           created_at: string
@@ -40,6 +125,128 @@ export type Database = {
           phone?: string | null
         }
         Relationships: []
+      }
+      offers: {
+        Row: {
+          created_at: string
+          description: string | null
+          discount_percentage: number
+          id: string
+          is_active: boolean | null
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          discount_percentage?: number
+          id?: string
+          is_active?: boolean | null
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          discount_percentage?: number
+          id?: string
+          is_active?: boolean | null
+          name?: string
+        }
+        Relationships: []
+      }
+      product_attributes: {
+        Row: {
+          certification: string | null
+          dimensions: string | null
+          id: string
+          product_id: string
+          size: string | null
+        }
+        Insert: {
+          certification?: string | null
+          dimensions?: string | null
+          id?: string
+          product_id: string
+          size?: string | null
+        }
+        Update: {
+          certification?: string | null
+          dimensions?: string | null
+          id?: string
+          product_id?: string
+          size?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_attributes_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "catalogue_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      showrooms: {
+        Row: {
+          created_at: string
+          id: string
+          location: string
+          name: string
+          phone: string | null
+          pincode: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          location: string
+          name: string
+          phone?: string | null
+          pincode: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          location?: string
+          name?: string
+          phone?: string | null
+          pincode?: string
+        }
+        Relationships: []
+      }
+      stock: {
+        Row: {
+          id: string
+          product_id: string
+          quantity: number
+          showroom_id: string
+        }
+        Insert: {
+          id?: string
+          product_id: string
+          quantity?: number
+          showroom_id: string
+        }
+        Update: {
+          id?: string
+          product_id?: string
+          quantity?: number
+          showroom_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "catalogue_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_showroom_id_fkey"
+            columns: ["showroom_id"]
+            isOneToOne: false
+            referencedRelation: "showrooms"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
