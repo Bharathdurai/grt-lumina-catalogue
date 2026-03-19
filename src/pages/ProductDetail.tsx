@@ -86,13 +86,16 @@ const ProductDetail = () => {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className={`aspect-square bg-gradient-to-br ${metalGradients[product.metal_type] || metalGradients.Gold} rounded-2xl flex items-center justify-center`}
+          className={`aspect-square bg-gradient-to-br ${metalGradients[product.metal_type] || metalGradients.Gold} rounded-2xl flex items-center justify-center overflow-hidden`}
         >
-          {product.image_url ? (
-            <img src={product.image_url} alt={product.name} className="w-full h-full object-cover rounded-2xl" />
-          ) : (
-            <span className="text-9xl">{metalEmojis[product.metal_type] || "💍"}</span>
-          )}
+          {(() => {
+            const imgSrc = getProductImage(product.sku_code, product.image_url);
+            return imgSrc ? (
+              <img src={imgSrc} alt={product.name} className="w-full h-full object-cover rounded-2xl" />
+            ) : (
+              <span className="text-9xl">{metalEmojis[product.metal_type] || "💍"}</span>
+            );
+          })()}
         </motion.div>
 
         {/* Details */}
