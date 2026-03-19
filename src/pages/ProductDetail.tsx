@@ -196,7 +196,7 @@ const Row = ({ label, value, isDiscount }: { label: string; value: number; isDis
   <div className="flex justify-between">
     <span className="text-muted-foreground">{label}</span>
     <span className={isDiscount ? "text-green-600 font-semibold" : "text-foreground"}>
-      {isDiscount ? "−" : ""}₹{Math.abs(value).toLocaleString("en-IN", { maximumFractionDigits: 0 })}
+      {isDiscount ? "−" : ""}₹ {Math.abs(value).toLocaleString("en-IN", { maximumFractionDigits: 0 })}
     </span>
   </div>
 );
