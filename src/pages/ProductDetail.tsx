@@ -135,8 +135,8 @@ const ProductDetail = () => {
                 <Row label={`Discount (₹${discountPerGram}/g)`} value={-pricing.discount} isDiscount />
                 <div className="border-t border-border pt-3 flex justify-between items-center">
                   <span className="font-semibold text-foreground text-base">Total</span>
-                  <span className="font-display text-2xl font-bold text-primary">
-                    ₹{pricing.finalPrice.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
+                  <span className="font-display text-2xl font-bold text-primary tracking-tight">
+                    ₹ {pricing.finalPrice.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
                   </span>
                 </div>
               </div>
