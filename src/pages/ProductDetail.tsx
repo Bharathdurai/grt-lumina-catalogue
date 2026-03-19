@@ -143,8 +143,8 @@ const ProductDetail = () => {
             ) : (
               <div className="flex justify-between items-center font-body">
                 <span className="text-muted-foreground">Price</span>
-                <span className="font-display text-2xl font-bold text-primary">
-                  ₹{Number(product.price).toLocaleString("en-IN")}
+                <span className="font-display text-2xl font-bold text-primary tracking-tight">
+                  ₹ {Number(product.price).toLocaleString("en-IN")}
                 </span>
               </div>
             )}
