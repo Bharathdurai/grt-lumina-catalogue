@@ -89,8 +89,9 @@ const CatalogueProductCard = ({ product, index = 0 }: { product: CatalogueProduc
               {product.name}
             </h3>
             <div className="flex items-baseline justify-between">
-              <span className="font-body font-bold text-base text-foreground tabular-nums">
-                ₹{Number(product.price).toLocaleString("en-IN")}
+              <span className="font-body font-bold text-base text-foreground tabular-nums tracking-tight">
+                <span className="font-semibold">₹</span>{" "}
+                {Number(product.price).toLocaleString("en-IN")}
               </span>
               <span className="text-xs text-muted-foreground font-body">
                 {Number(product.weight_grams)}g
