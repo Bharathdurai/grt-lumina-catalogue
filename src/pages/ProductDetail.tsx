@@ -5,6 +5,7 @@ import { useProductStock } from "@/hooks/useCatalogueProducts";
 import { useGoldRate } from "@/contexts/GoldRateContext";
 import { motion } from "framer-motion";
 import { ArrowLeft, ShieldCheck, MapPin, Package } from "lucide-react";
+import { getProductImage } from "@/assets/products";
 
 const metalGradients: Record<string, string> = {
   Gold: "from-amber-50 via-yellow-50 to-amber-100",
