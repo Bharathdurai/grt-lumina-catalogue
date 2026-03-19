@@ -3,6 +3,7 @@ import { CatalogueProduct } from "@/hooks/useCatalogueProducts";
 import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
 import { useState } from "react";
+import { getProductImage } from "@/assets/products";
 
 const metalGradients: Record<string, string> = {
   Gold: "from-amber-50 via-yellow-50 to-amber-100",
