@@ -5,6 +5,7 @@ import { useProductStock } from "@/hooks/useCatalogueProducts";
 import { useGoldRate } from "@/contexts/GoldRateContext";
 import { motion } from "framer-motion";
 import { ArrowLeft, ShieldCheck, MapPin, Package } from "lucide-react";
+import { getProductImage } from "@/assets/products";
 
 const metalGradients: Record<string, string> = {
   Gold: "from-amber-50 via-yellow-50 to-amber-100",
@@ -85,13 +86,16 @@ const ProductDetail = () => {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className={`aspect-square bg-gradient-to-br ${metalGradients[product.metal_type] || metalGradients.Gold} rounded-2xl flex items-center justify-center`}
+          className={`aspect-square bg-gradient-to-br ${metalGradients[product.metal_type] || metalGradients.Gold} rounded-2xl flex items-center justify-center overflow-hidden`}
         >
-          {product.image_url ? (
-            <img src={product.image_url} alt={product.name} className="w-full h-full object-cover rounded-2xl" />
-          ) : (
-            <span className="text-9xl">{metalEmojis[product.metal_type] || "💍"}</span>
-          )}
+          {(() => {
+            const imgSrc = getProductImage(product.sku_code, product.image_url);
+            return imgSrc ? (
+              <img src={imgSrc} alt={product.name} className="w-full h-full object-cover rounded-2xl" />
+            ) : (
+              <span className="text-9xl">{metalEmojis[product.metal_type] || "💍"}</span>
+            );
+          })()}
         </motion.div>
 
         {/* Details */}
@@ -131,16 +135,16 @@ const ProductDetail = () => {
                 <Row label={`Discount (₹${discountPerGram}/g)`} value={-pricing.discount} isDiscount />
                 <div className="border-t border-border pt-3 flex justify-between items-center">
                   <span className="font-semibold text-foreground text-base">Total</span>
-                  <span className="font-display text-2xl font-bold text-primary">
-                    ₹{pricing.finalPrice.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
+                  <span className="font-display text-2xl font-bold text-primary tracking-tight">
+                    ₹ {pricing.finalPrice.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
                   </span>
                 </div>
               </div>
             ) : (
               <div className="flex justify-between items-center font-body">
                 <span className="text-muted-foreground">Price</span>
-                <span className="font-display text-2xl font-bold text-primary">
-                  ₹{Number(product.price).toLocaleString("en-IN")}
+                <span className="font-display text-2xl font-bold text-primary tracking-tight">
+                  ₹ {Number(product.price).toLocaleString("en-IN")}
                 </span>
               </div>
             )}
@@ -192,7 +196,7 @@ const Row = ({ label, value, isDiscount }: { label: string; value: number; isDis
   <div className="flex justify-between">
     <span className="text-muted-foreground">{label}</span>
     <span className={isDiscount ? "text-green-600 font-semibold" : "text-foreground"}>
-      {isDiscount ? "−" : ""}₹{Math.abs(value).toLocaleString("en-IN", { maximumFractionDigits: 0 })}
+      {isDiscount ? "−" : ""}₹ {Math.abs(value).toLocaleString("en-IN", { maximumFractionDigits: 0 })}
     </span>
   </div>
 );

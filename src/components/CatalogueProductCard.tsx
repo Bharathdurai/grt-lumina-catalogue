@@ -3,6 +3,7 @@ import { CatalogueProduct } from "@/hooks/useCatalogueProducts";
 import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
 import { useState } from "react";
+import { getProductImage } from "@/assets/products";
 
 const metalGradients: Record<string, string> = {
   Gold: "from-amber-50 via-yellow-50 to-amber-100",
@@ -62,18 +63,21 @@ const CatalogueProductCard = ({ product, index = 0 }: { product: CatalogueProduc
 
           {/* Image */}
           <div className={`aspect-square bg-gradient-to-br ${metalGradients[product.metal_type] || metalGradients.Gold} flex items-center justify-center relative overflow-hidden`}>
-            {product.image_url ? (
-              <img
-                src={product.image_url}
-                alt={product.name}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                loading="lazy"
-              />
-            ) : (
-              <span className="text-7xl group-hover:scale-110 transition-transform duration-500 opacity-60">
-                {metalEmojis[product.metal_type] || "💍"}
-              </span>
-            )}
+            {(() => {
+              const imgSrc = getProductImage(product.sku_code, product.image_url);
+              return imgSrc ? (
+                <img
+                  src={imgSrc}
+                  alt={product.name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                />
+              ) : (
+                <span className="text-7xl group-hover:scale-110 transition-transform duration-500 opacity-60">
+                  {metalEmojis[product.metal_type] || "💍"}
+                </span>
+              );
+            })()}
           </div>
 
           {/* Info */}
@@ -85,8 +89,9 @@ const CatalogueProductCard = ({ product, index = 0 }: { product: CatalogueProduc
               {product.name}
             </h3>
             <div className="flex items-baseline justify-between">
-              <span className="font-body font-bold text-base text-foreground tabular-nums">
-                ₹{Number(product.price).toLocaleString("en-IN")}
+              <span className="font-body font-bold text-base text-foreground tabular-nums tracking-tight">
+                <span className="font-semibold">₹</span>{" "}
+                {Number(product.price).toLocaleString("en-IN")}
               </span>
               <span className="text-xs text-muted-foreground font-body">
                 {Number(product.weight_grams)}g
