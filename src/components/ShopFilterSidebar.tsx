@@ -12,6 +12,9 @@ interface FilterState {
   minWeight: number;
   maxWeight: number;
   includeOutOfStock: boolean;
+  genders: string[];
+  ageGroups: string[];
+  occasions: string[];
 }
 
 interface Props {
@@ -22,21 +25,19 @@ interface Props {
   productCount: number;
 }
 
-const METAL_TYPES = ["Gold", "Diamond", "Platinum", "Silver", "Copper"];
-
-const WEIGHT_SLABS = [
-  { label: "0 – 5g", min: 0, max: 5 },
-  { label: "5 – 10g", min: 5, max: 10 },
-  { label: "10 – 20g", min: 10, max: 20 },
-  { label: "20 – 50g", min: 20, max: 50 },
-  { label: "50g+", min: 50, max: 500 },
-];
+const METAL_TYPES = ["Gold", "Diamond", "Platinum", "Silver", "Copper", "Stone"];
+const GENDERS = ["Women", "Men", "Kids", "Unisex"];
+const AGE_GROUPS = ["0-12", "13-25", "26-40", "40+", "All Ages"];
+const OCCASIONS = ["Wedding", "Daily Wear", "Party", "Festival", "All Occasions"];
 
 const ShopFilterSidebar = ({ categories, filters, onFiltersChange, onClearAll, productCount }: Props) => {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     category: true,
     metal: true,
     price: true,
+    gender: false,
+    age: false,
+    occasion: false,
     weight: false,
     stock: false,
   });
@@ -59,14 +60,45 @@ const ShopFilterSidebar = ({ categories, filters, onFiltersChange, onClearAll, p
     onFiltersChange({ ...filters, metalTypes: next });
   };
 
+  const toggleGender = (g: string) => {
+    const next = filters.genders.includes(g)
+      ? filters.genders.filter((x) => x !== g)
+      : [...filters.genders, g];
+    onFiltersChange({ ...filters, genders: next });
+  };
+
+  const toggleAgeGroup = (a: string) => {
+    const next = filters.ageGroups.includes(a)
+      ? filters.ageGroups.filter((x) => x !== a)
+      : [...filters.ageGroups, a];
+    onFiltersChange({ ...filters, ageGroups: next });
+  };
+
+  const toggleOccasion = (o: string) => {
+    const next = filters.occasions.includes(o)
+      ? filters.occasions.filter((x) => x !== o)
+      : [...filters.occasions, o];
+    onFiltersChange({ ...filters, occasions: next });
+  };
+
   const hasActiveFilters =
     filters.categoryIds.length > 0 ||
     filters.metalTypes.length > 0 ||
+    filters.genders.length > 0 ||
+    filters.ageGroups.length > 0 ||
+    filters.occasions.length > 0 ||
     filters.minPrice > 0 ||
     filters.maxPrice < 500000 ||
     filters.minWeight > 0 ||
     filters.maxWeight < 500 ||
     filters.includeOutOfStock;
+
+  const activeFilterCount =
+    filters.categoryIds.length +
+    filters.metalTypes.length +
+    filters.genders.length +
+    filters.ageGroups.length +
+    filters.occasions.length;
 
   return (
     <div className="w-full">
@@ -74,9 +106,9 @@ const ShopFilterSidebar = ({ categories, filters, onFiltersChange, onClearAll, p
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-display text-lg font-bold text-foreground flex items-center gap-2">
           FILTERS
-          {hasActiveFilters && (
+          {activeFilterCount > 0 && (
             <span className="bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
-              {filters.categoryIds.length + filters.metalTypes.length}
+              {activeFilterCount}
             </span>
           )}
         </h2>
@@ -86,6 +118,24 @@ const ShopFilterSidebar = ({ categories, filters, onFiltersChange, onClearAll, p
           </button>
         )}
       </div>
+
+      {/* Active filter chips */}
+      {activeFilterCount > 0 && (
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          {filters.metalTypes.map((m) => (
+            <FilterChip key={m} label={m} onRemove={() => toggleMetal(m)} />
+          ))}
+          {filters.genders.map((g) => (
+            <FilterChip key={g} label={g} onRemove={() => toggleGender(g)} />
+          ))}
+          {filters.ageGroups.map((a) => (
+            <FilterChip key={a} label={a} onRemove={() => toggleAgeGroup(a)} />
+          ))}
+          {filters.occasions.map((o) => (
+            <FilterChip key={o} label={o} onRemove={() => toggleOccasion(o)} />
+          ))}
+        </div>
+      )}
 
       {/* Price Range */}
       <FilterSection title="Price" expanded={expandedSections.price} onToggle={() => toggleSection("price")}>
@@ -156,6 +206,57 @@ const ShopFilterSidebar = ({ categories, filters, onFiltersChange, onClearAll, p
         ))}
       </FilterSection>
 
+      {/* Gender */}
+      <FilterSection title="Gender" expanded={expandedSections.gender} onToggle={() => toggleSection("gender")}>
+        {GENDERS.map((g) => (
+          <label
+            key={g}
+            className="flex items-center gap-2 py-1 cursor-pointer text-sm font-body text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <Checkbox
+              checked={filters.genders.includes(g)}
+              onCheckedChange={() => toggleGender(g)}
+              className="h-4 w-4"
+            />
+            {g}
+          </label>
+        ))}
+      </FilterSection>
+
+      {/* Age Group */}
+      <FilterSection title="Age Group" expanded={expandedSections.age} onToggle={() => toggleSection("age")}>
+        {AGE_GROUPS.map((a) => (
+          <label
+            key={a}
+            className="flex items-center gap-2 py-1 cursor-pointer text-sm font-body text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <Checkbox
+              checked={filters.ageGroups.includes(a)}
+              onCheckedChange={() => toggleAgeGroup(a)}
+              className="h-4 w-4"
+            />
+            {a}
+          </label>
+        ))}
+      </FilterSection>
+
+      {/* Occasion */}
+      <FilterSection title="Occasion" expanded={expandedSections.occasion} onToggle={() => toggleSection("occasion")}>
+        {OCCASIONS.map((o) => (
+          <label
+            key={o}
+            className="flex items-center gap-2 py-1 cursor-pointer text-sm font-body text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <Checkbox
+              checked={filters.occasions.includes(o)}
+              onCheckedChange={() => toggleOccasion(o)}
+              className="h-4 w-4"
+            />
+            {o}
+          </label>
+        ))}
+      </FilterSection>
+
       {/* Weight */}
       <FilterSection title="Weight" expanded={expandedSections.weight} onToggle={() => toggleSection("weight")}>
         <div className="px-1">
@@ -190,6 +291,15 @@ const ShopFilterSidebar = ({ categories, filters, onFiltersChange, onClearAll, p
     </div>
   );
 };
+
+const FilterChip = ({ label, onRemove }: { label: string; onRemove: () => void }) => (
+  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/10 text-primary text-xs font-body rounded-full">
+    {label}
+    <button onClick={onRemove} className="hover:text-primary/70">
+      <X size={12} />
+    </button>
+  </span>
+);
 
 const FilterSection = ({
   title,

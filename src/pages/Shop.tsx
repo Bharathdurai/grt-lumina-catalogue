@@ -1,5 +1,4 @@
-import { useState, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useState } from "react";
 import { useCatalogueProducts, useCategories } from "@/hooks/useCatalogueProducts";
 import CatalogueProductCard from "@/components/CatalogueProductCard";
 import ShopFilterSidebar, { FilterState } from "@/components/ShopFilterSidebar";
@@ -15,6 +14,9 @@ const defaultFilters: FilterState = {
   minWeight: 0,
   maxWeight: 500,
   includeOutOfStock: false,
+  genders: [],
+  ageGroups: [],
+  occasions: [],
 };
 
 const SORT_OPTIONS = [
@@ -26,7 +28,6 @@ const SORT_OPTIONS = [
 ];
 
 const Shop = () => {
-  const [searchParams] = useSearchParams();
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("popular");
@@ -45,6 +46,9 @@ const Shop = () => {
     includeOutOfStock: filters.includeOutOfStock,
     pincode: pincode || undefined,
     sortBy,
+    genders: filters.genders.length ? filters.genders : undefined,
+    ageGroups: filters.ageGroups.length ? filters.ageGroups : undefined,
+    occasions: filters.occasions.length ? filters.occasions : undefined,
   });
 
   const clearAll = () => {

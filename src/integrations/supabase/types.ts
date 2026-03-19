@@ -16,43 +16,52 @@ export type Database = {
     Tables: {
       catalogue_products: {
         Row: {
+          age_group: string | null
           category_id: string | null
           created_at: string
           description: string | null
+          gender: string | null
           id: string
           image_url: string | null
           is_featured: boolean | null
           is_new: boolean | null
           metal_type: string
           name: string
+          occasion: string | null
           price: number
           sku_code: string
           weight_grams: number
         }
         Insert: {
+          age_group?: string | null
           category_id?: string | null
           created_at?: string
           description?: string | null
+          gender?: string | null
           id?: string
           image_url?: string | null
           is_featured?: boolean | null
           is_new?: boolean | null
           metal_type?: string
           name: string
+          occasion?: string | null
           price?: number
           sku_code: string
           weight_grams?: number
         }
         Update: {
+          age_group?: string | null
           category_id?: string | null
           created_at?: string
           description?: string | null
+          gender?: string | null
           id?: string
           image_url?: string | null
           is_featured?: boolean | null
           is_new?: boolean | null
           metal_type?: string
           name?: string
+          occasion?: string | null
           price?: number
           sku_code?: string
           weight_grams?: number

@@ -14,6 +14,9 @@ export interface CatalogueProduct {
   is_featured: boolean;
   is_new: boolean;
   created_at: string;
+  gender: string;
+  age_group: string;
+  occasion: string;
   category_name?: string;
   parent_category_name?: string;
   total_stock?: number;
@@ -73,6 +76,9 @@ export const useCatalogueProducts = (filters?: {
   includeOutOfStock?: boolean;
   pincode?: string;
   sortBy?: string;
+  genders?: string[];
+  ageGroups?: string[];
+  occasions?: string[];
 }) => {
   return useQuery({
     queryKey: ["catalogue-products", filters],
@@ -96,6 +102,15 @@ export const useCatalogueProducts = (filters?: {
       }
       if (filters?.maxWeight !== undefined) {
         query = query.lte("weight_grams", filters.maxWeight);
+      }
+      if (filters?.genders?.length) {
+        query = query.in("gender", filters.genders);
+      }
+      if (filters?.ageGroups?.length) {
+        query = query.in("age_group", filters.ageGroups);
+      }
+      if (filters?.occasions?.length) {
+        query = query.in("occasion", filters.occasions);
       }
       if (filters?.search) {
         query = query.or(
