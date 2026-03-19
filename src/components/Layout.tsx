@@ -3,10 +3,11 @@ import { useState } from "react";
 import { Menu, X, Phone, Mail, MapPin } from "lucide-react";
 import { useGoldRate } from "@/contexts/GoldRateContext";
 import { motion, AnimatePresence } from "framer-motion";
+import grtLogo from "@/assets/grt-logo.png";
 
 const navLinks = [
   { to: "/", label: "Home" },
-  { to: "/shop", label: "Shop" },
+  { to: "/shop", label: "Our Collection" },
   { to: "/about", label: "About" },
   { to: "/contact", label: "Contact" },
 ];
@@ -32,8 +33,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       {/* Navbar */}
       <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border">
         <div className="container mx-auto px-4 flex items-center justify-between h-16 md:h-20">
-          <Link to="/" className="font-display text-2xl md:text-3xl font-bold gold-text-gradient tracking-tight">
-            GRT Jewellery
+          <Link to="/" className="flex items-center">
+            <img
+              src={grtLogo}
+              alt="GRT Jewellers"
+              className="h-10 md:h-14 w-auto object-contain"
+            />
           </Link>
 
           {/* Desktop Nav */}
@@ -99,7 +104,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <div className="container mx-auto px-4 py-12 md:py-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             <div>
-              <h3 className="font-display text-xl font-bold text-gold-light mb-4">GRT Jewellery</h3>
+              <img src={grtLogo} alt="GRT Jewellers" className="h-12 w-auto mb-4 brightness-0 invert opacity-80" />
               <p className="text-sm opacity-80 leading-relaxed">
                 Crafting timeless jewellery since 1964. Every piece tells a story of heritage, artistry, and elegance.
               </p>

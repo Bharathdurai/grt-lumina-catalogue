@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { CatalogueProduct } from "@/hooks/useCatalogueProducts";
 import { motion } from "framer-motion";
-import { Heart, Eye } from "lucide-react";
+import { Heart } from "lucide-react";
 import { useState } from "react";
 
 const metalGradients: Record<string, string> = {
@@ -22,7 +22,6 @@ const metalEmojis: Record<string, string> = {
 
 const CatalogueProductCard = ({ product, index = 0 }: { product: CatalogueProduct; index?: number }) => {
   const [wishlisted, setWishlisted] = useState(false);
-
   const inStock = (product.total_stock ?? 0) > 0;
 
   return (
@@ -34,8 +33,8 @@ const CatalogueProductCard = ({ product, index = 0 }: { product: CatalogueProduc
     >
       <Link to={`/product/${product.id}`} className="block">
         <div className="bg-card rounded-lg overflow-hidden border border-border hover:shadow-elevated transition-all duration-300 relative">
-          {/* Wishlist + Quick View */}
-          <div className="absolute top-3 right-3 z-10 flex flex-col gap-2">
+          {/* Wishlist */}
+          <div className="absolute top-3 right-3 z-10">
             <button
               onClick={(e) => {
                 e.preventDefault();
@@ -68,6 +67,7 @@ const CatalogueProductCard = ({ product, index = 0 }: { product: CatalogueProduc
                 src={product.image_url}
                 alt={product.name}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                loading="lazy"
               />
             ) : (
               <span className="text-7xl group-hover:scale-110 transition-transform duration-500 opacity-60">
@@ -77,7 +77,7 @@ const CatalogueProductCard = ({ product, index = 0 }: { product: CatalogueProduc
           </div>
 
           {/* Info */}
-          <div className="p-4">
+          <div className="p-3 md:p-4">
             <p className="text-xs text-muted-foreground font-body mb-0.5 truncate">
               {product.parent_category_name} · {product.category_name}
             </p>
@@ -85,14 +85,14 @@ const CatalogueProductCard = ({ product, index = 0 }: { product: CatalogueProduc
               {product.name}
             </h3>
             <div className="flex items-baseline justify-between">
-              <span className="font-body font-bold text-base text-foreground">
+              <span className="font-body font-bold text-base text-foreground tabular-nums">
                 ₹{Number(product.price).toLocaleString("en-IN")}
               </span>
               <span className="text-xs text-muted-foreground font-body">
                 {Number(product.weight_grams)}g
               </span>
             </div>
-            <p className="text-xs text-muted-foreground font-body mt-1">
+            <p className="text-[10px] text-muted-foreground font-body mt-1 tracking-wide">
               SKU: {product.sku_code}
             </p>
           </div>
