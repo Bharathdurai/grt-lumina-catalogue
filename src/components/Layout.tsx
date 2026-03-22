@@ -16,7 +16,9 @@ const navLinks = [
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { goldRate } = useGoldRate();
+  const { user, isAdmin, signOut } = useAuth();
 
   return (
     <div className="min-h-screen flex flex-col">
