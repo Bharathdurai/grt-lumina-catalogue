@@ -1,7 +1,8 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { Menu, X, Phone, Mail, MapPin } from "lucide-react";
+import { Menu, X, Phone, Mail, MapPin, User, Shield, LogOut } from "lucide-react";
 import { useGoldRate } from "@/contexts/GoldRateContext";
+import { useAuth } from "@/hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
 import grtLogo from "@/assets/grt-logo.png";
 
@@ -15,7 +16,9 @@ const navLinks = [
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { goldRate } = useGoldRate();
+  const { user, isAdmin, signOut } = useAuth();
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -55,6 +58,26 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               </Link>
             ))}
           </nav>
+
+          {/* Auth buttons */}
+          <div className="hidden md:flex items-center gap-3">
+            {user ? (
+              <>
+                {isAdmin && (
+                  <Link to="/admin" className="flex items-center gap-1 text-sm font-body text-primary hover:text-primary/80">
+                    <Shield size={16} /> Admin
+                  </Link>
+                )}
+                <button onClick={() => { signOut(); navigate("/"); }} className="flex items-center gap-1 text-sm font-body text-muted-foreground hover:text-foreground">
+                  <LogOut size={16} /> Logout
+                </button>
+              </>
+            ) : (
+              <Link to="/auth" className="flex items-center gap-1 gradient-gold text-primary-foreground px-4 py-1.5 rounded-lg text-sm font-body font-semibold">
+                <User size={16} /> Login
+              </Link>
+            )}
+          </div>
 
           {/* Mobile Menu Button */}
           <button
