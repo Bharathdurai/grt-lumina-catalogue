@@ -59,6 +59,26 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             ))}
           </nav>
 
+          {/* Auth buttons */}
+          <div className="hidden md:flex items-center gap-3">
+            {user ? (
+              <>
+                {isAdmin && (
+                  <Link to="/admin" className="flex items-center gap-1 text-sm font-body text-primary hover:text-primary/80">
+                    <Shield size={16} /> Admin
+                  </Link>
+                )}
+                <button onClick={() => { signOut(); navigate("/"); }} className="flex items-center gap-1 text-sm font-body text-muted-foreground hover:text-foreground">
+                  <LogOut size={16} /> Logout
+                </button>
+              </>
+            ) : (
+              <Link to="/auth" className="flex items-center gap-1 gradient-gold text-primary-foreground px-4 py-1.5 rounded-lg text-sm font-body font-semibold">
+                <User size={16} /> Login
+              </Link>
+            )}
+          </div>
+
           {/* Mobile Menu Button */}
           <button
             className="md:hidden text-foreground p-2"
